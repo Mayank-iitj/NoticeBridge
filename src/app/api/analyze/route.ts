@@ -5,9 +5,10 @@ import { noticeSchema, NoticeResult } from "@/lib/schema";
 import { evaluateScamSignals } from "@/lib/scam";
 import resources from "@/data/resources.json";
 
-// Prevent deployment failure if key is missing locally
+// Prevent deployment failure if key is missing locally and sanitize bad copy-pastes
+const rawKey = process.env.OPENAI_API_KEY || "missing";
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "missing",
+  apiKey: rawKey.replace(/\s/g, ""),
 });
 
 const systemPrompt = `You are an expert at analyzing official notices, bills, and legal documents for the general public.

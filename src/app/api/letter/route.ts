@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
+const rawKey = process.env.OPENAI_API_KEY || "missing";
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "missing",
+  apiKey: rawKey.replace(/\s/g, ""),
 });
 
 export async function POST(req: NextRequest) {
