@@ -1,0 +1,44 @@
+[
+  {
+    "notice_type": "eviction",
+    "name": "LawHelp.org",
+    "url": "https://www.lawhelp.org",
+    "phone": null,
+    "why": "Provides free legal aid and information for housing issues."
+  },
+  {
+    "notice_type": "eviction",
+    "name": "HUD Housing Counseling",
+    "url": "https://www.hud.gov/counseling",
+    "phone": "800-569-4287",
+    "why": "Official government counseling for avoiding eviction."
+  },
+  {
+    "notice_type": "utility_disconnection",
+    "name": "211 Essential Community Services",
+    "url": "https://www.211.org",
+    "phone": "211",
+    "why": "Connects you with local utility assistance programs."
+  },
+  {
+    "notice_type": "tax",
+    "name": "IRS Taxpayer Advocate Service",
+    "url": "https://www.taxpayeradvocate.irs.gov",
+    "phone": "877-777-4778",
+    "why": "An independent organization within the IRS helping taxpayers resolve problems."
+  },
+  {
+    "notice_type": "debt_collection",
+    "name": "Consumer Financial Protection Bureau (CFPB)",
+    "url": "https://www.consumerfinance.gov/consumer-tools/debt-collection/",
+    "phone": "855-411-2372",
+    "why": "Official guidance on how to deal with debt collectors and your rights."
+  },
+  {
+    "notice_type": "medical_bill",
+    "name": "Patient Advocate Foundation",
+    "url": "https://www.patientadvocate.org",
+    "phone": "800-532-5274",
+    "why": "Helps patients resolve medical debt and billing issues."
+  }
+]

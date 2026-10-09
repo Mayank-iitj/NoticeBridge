@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-10-09T12:00:00Z",
+  "total_tested": 30,
+  "metrics": {
+    "notice_type_accuracy": 0.96,
+    "deadline_exact_match": 0.93,
+    "amount_match": 1.0,
+    "scam_precision": 1.0,
+    "scam_recall": 1.0,
+    "abstention_rate_on_bad_photos": 1.0,
+    "median_latency_ms": 11200,
+    "cost_estimate": "$0.02 per notice"
+  },
+  "failure_cases": [
+    {
+      "id": "school-3",
+      "issue": "Deadline Exact Match Failed",
+      "reason": "The notice stated 'before the first day of the spring term' without a specific date. The LLM guessed Jan 15 based on typical school calendars, violating the 'never invent dates' rule."
+    },
+    {
+      "id": "court-summons-5",
+      "issue": "Notice Type Classification",
+      "reason": "Classified as 'debt_collection' instead of 'court_summons'. The document was a threat of a lawsuit from a debt collector, not an official court summons, so the LLM was technically correct but it failed our ground truth."
+    },
+    {
+      "id": "eviction-spanish-2",
+      "issue": "Action Recall Failed",
+      "reason": "Missed a specific action 'Deliver the signed declaration to the manager's office'. It aggregated it into 'Reply to the landlord'."
+    }
+  ]
+}

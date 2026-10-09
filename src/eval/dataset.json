@@ -1,0 +1,68 @@
+[
+  {
+    "id": "eviction-1",
+    "text": "PAY OR QUIT NOTICE\n\nDear John Doe, you owe $1,200 in rent for October. You have 3 days from Oct 10, 2026 to pay this amount or vacate the premises. If you fail to do so, an eviction lawsuit will be filed against you in housing court.",
+    "ground_truth": {
+      "notice_type": "eviction",
+      "deadline_iso": "2026-10-13",
+      "amount": 1200,
+      "is_scam": false,
+      "actions": ["Pay $1,200 within 3 days", "Vacate if unable to pay"]
+    }
+  },
+  {
+    "id": "eviction-2",
+    "text": "14-Day Notice to Terminate Tenancy\n\nTenant: Jane Smith. Address: 123 Maple St. You have violated your lease by keeping an unauthorized pet. You must remove the pet or vacate the property by Oct 24, 2026.",
+    "ground_truth": {
+      "notice_type": "eviction",
+      "deadline_iso": "2026-10-24",
+      "amount": null,
+      "is_scam": false,
+      "actions": ["Remove unauthorized pet", "Vacate by deadline"]
+    }
+  },
+  {
+    "id": "utility-1",
+    "text": "FINAL DISCONNECTION NOTICE\n\nYour electricity bill of $150.50 is past due. If payment is not received by Oct 15, 2026, your service will be disconnected. To restore service after disconnection, a reconnect fee of $50 will apply.",
+    "ground_truth": {
+      "notice_type": "utility_disconnection",
+      "deadline_iso": "2026-10-15",
+      "amount": 150.5,
+      "is_scam": false,
+      "actions": ["Pay $150.50 by Oct 15"]
+    }
+  },
+  {
+    "id": "tax-scam-1",
+    "text": "URGENT TAX NOTICE: You owe back taxes of $4,500. Please call us immediately at 555-0199 or face immediate arrest by local police. Pay via iTunes gift cards today to clear your warrant.",
+    "ground_truth": {
+      "notice_type": "tax",
+      "deadline_iso": null,
+      "amount": 4500,
+      "is_scam": true,
+      "actions": []
+    }
+  },
+  {
+    "id": "court-1",
+    "text": "SUMMONS AND COMPLAINT\n\nYou are being sued. You must file a written answer with the court within 20 days. Date of service: Oct 1, 2026. Failure to answer will result in a default judgment against you.",
+    "ground_truth": {
+      "notice_type": "court_summons",
+      "deadline_iso": "2026-10-21",
+      "amount": null,
+      "is_scam": false,
+      "actions": ["File a written answer with the court"]
+    }
+  },
+  {
+    "id": "medical-1",
+    "text": "Invoice for Medical Services\n\nDate of service: Sep 15, 2026. Total Charges: $850. Insurance Paid: $0. Amount Due: $850. Please remit payment by Oct 30, 2026.",
+    "ground_truth": {
+      "notice_type": "medical_bill",
+      "deadline_iso": "2026-10-30",
+      "amount": 850,
+      "is_scam": false,
+      "actions": ["Pay $850 by Oct 30"]
+    }
+  }
+]
