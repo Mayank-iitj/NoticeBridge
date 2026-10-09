@@ -24,12 +24,14 @@ export function LetterGenerator({ result }: { result: NoticeResult }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ noticeResult: result, letterType })
       });
-      if (!res.ok) throw new Error("Failed to generate");
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to generate letter from API");
+      }
       setDraft(data.letter);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setDraft("Error generating letter. Please try again.");
+      setDraft(`Error generating letter: ${e.message}`);
     } finally {
       setIsGenerating(false);
     }
