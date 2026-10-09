@@ -192,7 +192,7 @@ export async function POST(req: NextRequest) {
           while (attempt < 2 && !parsedResult) {
             try {
                const response = await openai.chat.completions.create({
-                model: "gpt-4o",
+                model: "gpt-5-nano",
                 messages: [
                   { role: "system", content: systemPrompt },
                   ...messages

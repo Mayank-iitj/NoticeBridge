@@ -56,7 +56,7 @@ Instructions:
 5. Do not include any pre-text or post-text, JUST the letter itself.`;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-5-nano",
       max_tokens: 1000,
       messages: [
         { role: "system", content: systemPrompt },

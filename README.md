@@ -8,7 +8,7 @@
     <a href="https://github.com/Mayank-iitj/NoticeBridge/network/members"><img src="https://img.shields.io/github/forks/Mayank-iitj/NoticeBridge" alt="Forks Badge"/></a>
     <a href="https://github.com/Mayank-iitj/NoticeBridge/issues"><img src="https://img.shields.io/github/issues/Mayank-iitj/NoticeBridge" alt="Issues Badge"/></a>
     <img src="https://img.shields.io/badge/Next.js-14-black?style=flat&logo=next.js" alt="Next.js" />
-    <img src="https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=flat&logo=openai" alt="OpenAI" />
+    <img src="https://img.shields.io/badge/OpenAI-GPT--5--nano-412991?style=flat&logo=openai" alt="OpenAI" />
   </p>
 </div>
 
@@ -29,7 +29,7 @@ Simply upload a photo or PDF of any official notice. NoticeBridge extracts the f
 ## ✨ Premium Features
 
 ### 🧠 Deterministic AI Extraction
-We don't just ask the AI to "summarize." NoticeBridge uses **OpenAI GPT-4o** combined with strict **Zod JSON schemas** and function-calling. This physically forces the LLM to output structured data (exact dates, amounts due, and issuer names) rather than rambling paragraphs, completely eliminating hallucinations.
+We don't just ask the AI to "summarize." NoticeBridge uses **OpenAI GPT-5-nano** combined with strict **Zod JSON schemas** and function-calling. This physically forces the LLM to output structured data (exact dates, amounts due, and issuer names) rather than rambling paragraphs, completely eliminating hallucinations.
 
 ### 🛡️ Ironclad Scam Detection
 Scammers prey on the vulnerable. We run every document through a hybrid threat-detection pipeline. A hardcoded, deterministic RegEx engine checks for known threat vectors (e.g., "gift cards," "warrant for arrest," "Bitcoin") while the AI assesses the overall context. 
@@ -53,7 +53,7 @@ Need to ask for an extension? Need to dispute a debt? NoticeBridge takes the exa
 - **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS + [shadcn/ui](https://ui.shadcn.com/)
-- **AI/ML Engine**: OpenAI (`gpt-4o`) via `openai` Node SDK
+- **AI/ML Engine**: OpenAI (`gpt-5-nano`) via `openai` Node SDK
 - **PDF Parsing**: `pdfjs-dist` (Client-side Web Worker)
 - **Validation**: Zod
 - **Icons**: Lucide React
