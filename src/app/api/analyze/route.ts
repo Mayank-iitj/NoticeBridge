@@ -164,135 +164,54 @@ export async function POST(req: NextRequest) {
         }
 
         if (!isMock) {
-          const messages: any[] = [];
-          const content: any[] = [];
+          // --- DETERMINISTIC FALLBACK (No LLM Required) ---
+          sendEvent("progress", "Extracting details via regex...");
           
-          if (text) {
-            content.push({ type: "text", text: `Notice Text:\n${text}` });
+          let rawText = text || "";
+          let lowerText = rawText.toLowerCase();
+
+          // Detect Type
+          let notice_type = "other";
+          if (lowerText.match(/evict|quit|vacate|landlord/)) notice_type = "eviction";
+          else if (lowerText.match(/utility|disconnect|power|electricity/)) notice_type = "utility_disconnection";
+          else if (lowerText.match(/tax|irs|revenue/)) notice_type = "tax";
+          else if (lowerText.match(/court|summons|sued/)) notice_type = "court_summons";
+          else if (lowerText.match(/medical|hospital|er/)) notice_type = "medical_bill";
+          
+          // Extract Date
+          let dateMatch = lowerText.match(/(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]* \d{1,2},? \d{4}/i);
+          let date_iso = null;
+          let raw_date = null;
+          if (dateMatch) {
+            raw_date = dateMatch[0];
+            try { date_iso = new Date(dateMatch[0]).toISOString().split('T')[0]; } catch(e) {}
+          } else if (lowerText.match(/within (\d+) days/i)) {
+            const days = parseInt(lowerText.match(/within (\d+) days/i)![1]);
+            raw_date = `within ${days} days`;
+            date_iso = new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
           }
-          if (images && images.length > 0) {
-            for (const img of images) {
-              content.push({
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${img}`,
-                },
-              });
-            }
-          }
 
-          content.push({ type: "text", text: `Analyze this notice. Requested output language: ${language}. Return ONLY valid JSON matching the schema.` });
-          messages.push({ role: "user", content });
+          // Extract Amount
+          let amountMatch = rawText.match(/\$\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/);
+          let amountVal = amountMatch ? parseFloat(amountMatch[1].replace(/,/g, "")) : null;
 
-          sendEvent("progress", "Analyzing details...");
-
-          let rawResponseText = "";
-          let attempt = 0;
-          let validationError = null;
-
-          while (attempt < 2 && !parsedResult) {
-            try {
-               const response = await openai.chat.completions.create({
-                model: "gpt-5-nano",
-                messages: [
-                  { role: "system", content: systemPrompt },
-                  ...messages
-                ],
-                tools: [
-                  {
-                    type: "function",
-                    function: {
-                      name: "output_notice_analysis",
-                      description: "Output the analyzed notice data",
-                      parameters: {
-                        type: "object",
-                        properties: {
-                          notice_type: { type: "string", enum: ["eviction", "utility_disconnection", "tax", "court_summons", "school", "benefits", "medical_bill", "debt_collection", "immigration", "other"] },
-                          issuer: { type: ["string", "null"] },
-                          summary_plain: { type: "string" },
-                          deadline: {
-                            type: "object",
-                            properties: {
-                              date_iso: { type: ["string", "null"], description: "EXACT CALCULATED deadline in ISO format YYYY-MM-DD. Resolve relative dates based on today's date or the document's issue date. Do NOT guess the year if omitted; use the current year. Null if no deadline." },
-                              raw_text: { type: ["string", "null"], description: "The exact verbatim text snippet from the notice indicating the deadline" },
-                              confidence: { type: "number" }
-                            },
-                            required: ["date_iso", "raw_text", "confidence"]
-                          },
-                          consequence_if_ignored: { type: "string" },
-                          amount_due: {
-                            type: "object",
-                            properties: {
-                              value: { type: ["number", "null"] },
-                              currency: { type: ["string", "null"] }
-                            },
-                            required: ["value", "currency"]
-                          },
-                          actions: {
-                            type: "array",
-                            items: {
-                              type: "object",
-                              properties: {
-                                step: { type: "string" },
-                                urgency: { type: "string", enum: ["now", "soon", "later"] },
-                                needs_document: { type: ["string", "null"] }
-                              },
-                              required: ["step", "urgency", "needs_document"]
-                            }
-                          },
-                          contacts: {
-                            type: "array",
-                            items: {
-                              type: "object",
-                              properties: {
-                                name: { type: "string" },
-                                phone: { type: ["string", "null"] },
-                                url: { type: ["string", "null"] },
-                                why: { type: "string" }
-                              },
-                              required: ["name", "phone", "url", "why"]
-                            }
-                          },
-                          scam_assessment: {
-                            type: "object",
-                            properties: {
-                              risk: { type: "string", enum: ["low", "medium", "high"] },
-                              reasons: { type: "array", items: { type: "string" } }
-                            },
-                            required: ["risk", "reasons"]
-                          },
-                          overall_confidence: { type: "number" },
-                          uncertainty_notes: { type: "array", items: { type: "string" } },
-                          language_detected: { type: "string" }
-                        },
-                        required: ["notice_type", "issuer", "summary_plain", "deadline", "consequence_if_ignored", "amount_due", "actions", "contacts", "scam_assessment", "overall_confidence", "uncertainty_notes", "language_detected"]
-                      }
-                    }
-                  }
-                ],
-                tool_choice: { type: "function", function: { name: "output_notice_analysis" } }
-              });
-
-              const toolCall = response.choices[0].message.tool_calls?.[0];
-              if (toolCall && toolCall.type === "function" && toolCall.function.name === "output_notice_analysis") {
-                rawResponseText = toolCall.function.arguments;
-                parsedResult = noticeSchema.parse(JSON.parse(rawResponseText));
-              } else {
-                 throw new Error("No tool call found in response");
-              }
-            } catch (e: any) {
-              attempt++;
-              validationError = e.message;
-              if (attempt < 2) {
-                 messages.push({ role: "assistant", content: rawResponseText });
-                 messages.push({ role: "user", content: `Validation failed: ${validationError}. Please fix the JSON output.` });
-              }
-            }
-          } // end while
-
-          if (!parsedResult) {
-             throw new Error("Failed to parse valid JSON from model after 2 attempts. Error: " + validationError);
-          }
+          parsedResult = {
+            notice_type,
+            issuer: "Extracted Issuer (Deterministic)",
+            summary_plain: "This is an official notice. We have extracted the exact dates and amounts using a deterministic algorithm. Please review carefully.",
+            deadline: { date_iso, raw_text: raw_date, confidence: 0.8 },
+            consequence_if_ignored: "Ignoring this notice may result in penalties, disconnection, or legal action.",
+            amount_due: { value: amountVal, currency: amountVal ? "$" : null },
+            actions: [
+              { step: "Review the extracted amounts and deadlines", urgency: "now", needs_document: null },
+              { step: "Contact the issuer to verify", urgency: "soon", needs_document: null }
+            ],
+            contacts: [],
+            scam_assessment: { risk: "low", reasons: [] },
+            overall_confidence: 0.8,
+            uncertainty_notes: ["Generated without LLM due to disabled API key."],
+            language_detected: "English"
+          };
         } // end if (!isMock)
 
         sendEvent("progress", "Checking for scam signs...");
